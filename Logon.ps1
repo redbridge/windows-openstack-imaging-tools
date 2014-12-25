@@ -69,6 +69,18 @@ try
             throw "Installing $CloudbaseInitMsiPath failed. Log: $CloudbaseInitMsiLog"
         }
 
+        $Host.UI.RawUI.WindowTitle = "Installing CloudStack instance manager..."
+        Write-Host "Installing CloudStack support tools"
+        $csExeUrl = "https://github.com/redbridge/windows-openstack-imaging-tools/raw/master/CloudInstanceManager.msi"
+        $csExePath = "$ENV:Temp\CloudInstanceManager.msi"
+        $csMsiLog = "$ENV:Temp\csim.log"
+        (new-object System.Net.WebClient).DownloadFile($csExeUrl, $csExePath)
+        $p = Start-Process -Wait -PassThru -FilePath msiexec -ArgumentList "/i $csExePath /qn /l*v $csMsiLog"
+        if ($p.ExitCode -ne 0)
+        {
+            throw "Installing CloudStack instance manager failed. Log: $csMsiLog"
+        }
+
          # We're done, remove LogonScript and disable AutoLogon
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name Unattend*
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name AutoLogonCount
