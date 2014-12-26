@@ -6,14 +6,14 @@ try
     $baseUrl = "https://raw.github.com/redbridge/windows-openstack-imaging-tools/master"
 
     # Put the wallpaper in place
-    $wallpaper_dir = "$ENV:SystemRoot\web\Wallpaper\RedBridge"
+    $wallpaper_dir = "$ENV:SystemRoot\web\Wallpaper\Cloudbase"
     if (!(Test-Path $wallpaper_dir))
     {
         mkdir $wallpaper_dir
     }
 
     $Host.UI.RawUI.WindowTitle = "Downloading wallpaper..."
-    $wallpaper = "rbc-wallpaper.png"
+    $wallpaper = "Wallpaper-Cloudbase-2013.png"
     (new-object System.Net.WebClient).DownloadFile("$baseUrl/$wallpaper", "$wallpaper_dir\$wallpaper")
 
     $Host.UI.RawUI.WindowTitle = "Configuring GPOs..."
