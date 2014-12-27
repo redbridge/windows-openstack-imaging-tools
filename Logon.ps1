@@ -80,8 +80,12 @@ try
         {
             throw "Installing CloudStack instance manager failed. Log: $csMsiLog"
         }
-
-         # We're done, remove LogonScript and disable AutoLogon
+        # Add KMS host
+        $p = Start-Process -Wait -PassThru -FilePath cscript -ArgumentList "c:\windows\system32\slmgr.vbs -skms kms.rbcloud.net"
+        $p = Start-Process -Wait -PassThru -FilePath cscript -ArgumentList "c:\windows\system32\slmgr.vbs -ato"
+        
+         
+        # We're done, remove LogonScript and disable AutoLogon
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name Unattend*
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name AutoLogonCount
 
