@@ -64,6 +64,11 @@ try
         $serialPortName = @(Get-WmiObject Win32_SerialPort)[0].DeviceId
 
         $p = Start-Process -Wait -PassThru -FilePath msiexec -ArgumentList "/i $CloudbaseInitMsiPath /qn /l*v $CloudbaseInitMsiLog LOGGINGSERIALPORTNAME=$serialPortName"
+        # Push custom config
+        $baseUrl = "https://raw.github.com/redbridge/windows-openstack-imaging-tools/master"
+        $destPath = "$programFilesDir\Cloudbase Solutions\Cloudbase-Init\conf"
+        $fileName = "cloudbase-init-unattend.conf"
+        (new-object System.Net.WebClient).DownloadFile("$baseUrl/$fileName", "$destPath/$fileName")
         if ($p.ExitCode -ne 0)
         {
             throw "Installing $CloudbaseInitMsiPath failed. Log: $CloudbaseInitMsiLog"
@@ -80,11 +85,12 @@ try
         {
             throw "Installing CloudStack instance manager failed. Log: $csMsiLog"
         }
+
         # Add KMS host
         $p = Start-Process -Wait -PassThru -FilePath cscript -ArgumentList "c:\windows\system32\slmgr.vbs -skms kms.rbcloud.net"
         $p = Start-Process -Wait -PassThru -FilePath cscript -ArgumentList "c:\windows\system32\slmgr.vbs -ato"
-        
-         
+
+
         # We're done, remove LogonScript and disable AutoLogon
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name Unattend*
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name AutoLogonCount
